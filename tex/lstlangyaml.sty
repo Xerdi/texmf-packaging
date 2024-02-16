@@ -1,0 +1,32 @@
+%! Package = PACKAGE_NAME
+%! Author = erik
+%! Date = 16-02-2024
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lstlangyaml}[2024/02/16 Xerdi's JSON Listings Package]
+
+\RequirePackage{packaging}
+
+\newcommand\YAMLcolonstyle{\color{dark}\ttfamily}
+\newcommand\YAMLkeystyle{\color{primary}\bfseries\ttfamily}
+\newcommand\YAMLvaluestyle{\color{success}\ttfamily}
+
+\lstdefinelanguage{yaml}{
+    keywords={true,false,null,y,n},
+    sensitive=false,
+    comment=[l]{\#},
+    morecomment=[s]{/*}{*/},
+    moredelim=[l][\color{orange}]{\&},
+    moredelim=[l][\color{magenta}]{*},
+    moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},
+    morestring=[b]',
+    morestring=[b]",
+    literate =    {---}{{\ProcessThreeDashes}}3
+        {>}{{\textcolor{primary}\textgreater}}1
+        {|}{{\textcolor{primary}\textbar}}1
+        {\ -\ }{{\mdseries\ -\ }}3
+}
+
+\lstdefinestyle{yaml}{
+    language=yaml
+}

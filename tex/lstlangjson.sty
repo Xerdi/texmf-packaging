@@ -1,0 +1,35 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lstlangjson}[2024/02/16 Xerdi's JSON Listings Package]
+
+\RequirePackage{packaging}
+
+
+\lstdefinelanguage{json}{
+    morestring=[b]',
+    morestring=[b]",
+    literate=
+    *{0}{{{\color{info}0}}}{1}
+        {1}{{{\bfseries\color{primary}1}}}{1}
+        {2}{{{\bfseries\color{primary}2}}}{1}
+        {3}{{{\bfseries\color{primary}3}}}{1}
+        {4}{{{\bfseries\color{primary}4}}}{1}
+        {5}{{{\bfseries\color{primary}5}}}{1}
+        {6}{{{\bfseries\color{primary}6}}}{1}
+        {7}{{{\bfseries\color{primary}7}}}{1}
+        {8}{{{\bfseries\color{primary}8}}}{1}
+        {9}{{{\bfseries\color{primary}9}}}{1}
+        {0}{{{\bfseries\color{primary}0}}}{1}
+        {.}{{{\bfseries .}}}{1}
+        {true}{{{\bfseries\color{primary}true}}}{3}
+        {false}{{{\bfseries\color{primary}false}}}{4}
+        {:}{{{\color{dark}{:}}}}{1}
+        {,}{{{\color{dark}{,}}}}{1}
+        {\{}{{{\color{dark}{\{}}}}{1}
+        {\}}{{{\color{dark}{\}}}}}{1}
+        {[}{{{\color{dark}{[}}}}{1}
+        {]}{{{\color{dark}{]}}}}{1},
+}
+
+\lstdefinestyle{json}{
+    language=json
+}
