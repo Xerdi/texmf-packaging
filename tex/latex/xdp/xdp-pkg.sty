@@ -1,0 +1,42 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{xdp-pkg}[2024/01/20 XDP's Packaging Package]
+
+\RequirePackage{fontspec}
+\RequirePackage{libertine}
+\setsansfont{Cantarell}
+\setmonofont[Scale=.75]{Liberation Mono}
+\newfontfamily{\xerdifont}{Righteous}
+
+\RequirePackage{xcolor}
+\definecolor{primary}{HTML}{174A67}
+\definecolor{secondary}{HTML}{17675c}
+\definecolor{success}{HTML}{176734}
+\definecolor{danger}{HTML}{671722}
+\definecolor{warning}{HTML}{675c17}
+\definecolor{info}{HTML}{597e92}
+\definecolor{light}{HTML}{fdfdfd}
+\definecolor{dark}{HTML}{091D28}
+\definecolor{muted}{HTML}{eff2f4}
+
+\RequirePackage{hologo}
+\RequirePackage{xspace}
+\let\acro\relax
+
+\def\Xerdi{{\color{primary}\xerdifont Xerdi}\xspace}
+\def\YAML{\acro{YAML}}
+\def\JSON{\acro{JSON}}
+\def\TeX{\hologo{TeX}\xspace}
+\def\LaTeX{\hologo{LaTeX}\xspace}
+\def\LuaLaTeX{\hologo{LuaLaTeX}\xspace}
+\def\LuaTeX{\hologo{LuaTeX}\xspace}
+\def\BibTeX{\hologo{BibTeX}\xspace}
+\def\TeXLive{\hologo{TeX} Live\xspace}
+
+\AddToHook{package/dirtree/after}{%
+    \DTsetlength
+    {0.2em} % offset
+    {1em}   % width
+    {0.2em} % sep
+    {0.4pt} % rule
+    {0.4pt} % dot size
+}
