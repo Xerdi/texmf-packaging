@@ -1,0 +1,143 @@
+\documentclass{xdpdoc}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{calc}
+\usepackage{biblatex}
+\usepackage{dirtree}
+\usepackage{wrapfig2}
+%\usepackage{showframe}
+
+\title{Packaging Guidelines}
+
+\newlist{rules}{enumerate}{2}
+\setlist[rules]{
+    align=left,
+    leftmargin = 10pt,
+    parsep=5pt,
+    itemsep=0pt,
+%    labelindent = \parindent,
+    listparindent = \parindent,
+    labelwidth=0pt,
+    itemindent=!
+}
+\setlist[rules,1]{label={\thesection.\arabic*}}
+\setlist[rules,2]{label={\alph*}}
+
+\addbibresource{xdp-packaging.bib}
+
+% Document
+\begin{document}
+    \maketitle
+%    \begin{multicols}{2}
+    \section*{Introduction}
+
+    Xerdi's Documentation Project (XDP) is part of an Open Source initiative of Xerdi, that aims to bring free software to the world of corporate businesses.
+    The guidelines provided by this document state guidelines for working on the XDP project itself, any packages derived from the XDP project, or typical \LuaLaTeX packages containing both Lua and \TeX related sources, like \texttt{gitinfo-lua} and \texttt{lua-placeholders}.
+
+
+    \section{Programs and Compilers}
+
+    All deliverables of a package should be creatable with the \texttt{make} program.
+    All documentation sources should be compiled with \LuaLaTeX.
+    For managing glossaries, acronyms and definitions with \BibTeX, program \texttt{bib2gls}~\cite{bib2gls} is used, which requires Java version 8 or higher.
+    Additionally, the \texttt{latexmk}~\cite{latexmk} program can be used as compiler utility.
+
+
+    \begin{wrapfigure}{r}{7cm}
+        \vspace*{-1.1cm}%
+        \dirtree{%
+            .1 \meta{project dir}.
+            .2 .github.
+            .3 workflows.
+            .4 \meta{workflow}.yaml.
+            .2 doc.
+            .3 \meta{package name}.tex.
+            .3 \meta{package name}.pdf.
+            .3 init.lua.
+            .3 latexmkrc.
+            .2 scripts.
+            .3 \meta{package name}.lua.
+            .3 \meta{package name}-\meta{class name}.lua.
+            .2 tex.
+            .3 \meta{package name}.sty.
+            .2 .gitignore.
+            .2 Makefile.
+            .2 README.md.
+            .2 LICENSE.txt.
+        }
+        \caption{Project Directory Structure}\label{fig:project dir}
+%        \vspace{-2.5cm}
+    \end{wrapfigure}
+
+    \section{Project Directory Structure}\label{sec:pds}
+
+    XDP provides a custom \texttt{texmf.cnf} configuration file supporting \texttt{PKGHOME} directory.
+    It does not intend to \textit{change} the definition of \texttt{TEXMFHOME}, which works for TDS standard~\cite{tds} directory structures, but rather extend the \texttt{TEXINPUTS} and \texttt{LUAINPUTS} variables with \texttt{PKGHOME}, which provides a slimmer structure for packages' project directory structure.
+    This \texttt{TEXMF} configuration brings support for your \TeX distribution to \textit{`large packages'} as stated by the CTAN Team~\cite{ctan:help:upload}, which is \textit{`improved by a single extra layer of directories'} as seen in figure~\ref{fig:project dir}.
+    However, for small packages, every file should be placed in a single directory, which is the preferred choice of CTAN and by default supported with \TeX distributions thanks to the \texttt{TEXMFDOTDIR} variable.
+    For large packages that do not work properly with \texttt{PKGHOME} variable, the TDS-packaged layout should be used instead~\cite{ctan:help:tds}.
+    XDP packages use the slimmer structure, as they typically ship Lua scripting files.
+
+    \section{Package Bundling}\label{sec:bundling}
+
+    Packages must be bundled with either \texttt{zip} or \texttt{tar.gz} extension.
+    XDP prefers the \texttt{tar.gz} extension, because \texttt{tar} is by default present on GNU/Linux platforms.
+    The archive layout must be one of the layouts described in section~\ref{sec:pds}.
+    An additional \texttt{tds.tar.gz} archive should be included in the toplevel of the package archive, which has a TDS compliant layout.
+    While the extra TDS archive is not a hard requirement according to CTAN, it is however helpful for users that want to manually install the package without the support of the \texttt{tlmgr} program and/or the \texttt{PKGHOME} variable.
+    All archiving procedures should be available as targets in the projects' Makefile.
+    The \texttt{doc} directory typically contains auxiliary files after compilation of the manual.
+    These auxiliary files must be excluded in any of the described directory structures in section~\ref{sec:pds}.
+    This can be avoided by either cleaning your output directory with \texttt{latexmk -c \meta{package name}} after the compilation of the manual or by explicitly picking files with the \texttt{tar} command when bundling the package.
+
+    \section{Package Versioning}
+
+    Packages must at least have a distinct date and should additionally have a version for every release to come.
+    Despite having a second variable; the version, packages must not create multiple releases on one day.
+    Both the main Lua file, likely called \meta{package name}\texttt{.lua}, and all \TeX related files, like \texttt{.cls} or \texttt{.sty} files, should have included an updated version and date in its sources, prior to creating a release (see section~\ref{sec:submission}).
+    The version and date must correspond with the administration of the Version Control system (see section~\ref{sec:git}).
+
+    \section{Package Submission}\label{sec:submission}
+
+    Before uploading the package bundle to CTAN, the bundle should be reviewed by a \textit{human} first.
+    For submitting an update to a pacakge, it's best to first browse to the package url on CTAN and secondly hit the upload button.
+    That way, earlier provided information will be automatically filled in, i.e.\ the suggested CTAN directory.
+    For more information on uploading packages to CTAN, read the upload addendum of CTAN~\cite{ctan:help:addendum}.
+
+    \section{Version Control}\label{sec:git}
+
+    All package sources must be versioned with Git for documented change management.
+    All package sources should be held publicly on GitHub as a central point of collaboration.
+    Every commit should be digitally signed either using GPG, SSH or S/MIME by any contributor.
+    Package versions should be managed using Git \textit{signed} tags.
+    The Git tag must point to a revision where hardcoded versions and dates are updated in all applicable sources of the package.
+    Package manuals should address the package versions and dates with \texttt{gitinfo-lua}~\cite{gitinfo-lua}, instead of inserting a hardcoded version and date.
+
+    \section{Continuous Integration and Delivery}
+
+    Any GitHub Action should use the Docker image originating from \texttt{xdp-docker}~\cite{xdp-docker}.
+    Any GitHub Action should use the appropriate \texttt{TEXMFHOME} repository.
+    For XDP packages this typically is \url{https://github.com/Xerdi/texmf-packaging}.
+
+    A project should have a `build' GitHub Action.
+    The build action should trigger for the master/main branch and for every opened or synchronized pull-request.
+    The build action should test the successful creation of the package manual and bundles.
+    The build action should archive the build directory for debugging purposes.
+
+    A project should have a `publish' GitHub Action.
+    The publish action should trigger for any tag.
+    The publish action should create all deliverables.
+    The publish action should create a GitHub Release as a \texttt{draft}.
+    Every deliverable should be attached to the GitHub Release.
+    The GitHub Release message must be reviewed and corrected by the package maintainer.
+    The GitHub Release must either be made publicly or deleted by the package maintainer.
+
+    \section{Licensing}
+
+    All package sources must be licensed as Free Software.
+    All \LaTeX\ related files within XDP and its derived packages are all to be licensed under the LPPLv1.3c license.
+    Platform-dependent program's sources should instead be licensed under the GPLv2 license or any higher version of the GPL\@.
+
+    \printbibliography
+%    \end{multicols}
+\end{document}
