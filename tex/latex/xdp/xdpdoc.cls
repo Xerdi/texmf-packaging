@@ -16,7 +16,7 @@
 \ihead[\normalfont\gitauthor]{\normalfont XDP \@title}
 \ohead[\normalfont\today]{\rightmark}
 
-\ifoot[\normalfont Rev.\ \texttt{\gitversion}]{\normalfont\gitauthor}
+\ifoot[Rev.\ \texttt{\gitversion}]{Rev.\ \texttt{\gitversion}}
 \ofoot[\normalfont\copyright\Xerdi]{\normalfont\copyright\Xerdi}
 
 % Polyfill typical ltxdoc macros
@@ -26,7 +26,11 @@
 \def\marg#1{\{\meta{#1}\}}
 \def\oarg#1{[\meta{#1}]}
 
+\renewcommand\title[1]{\global\def\@title{#1}}
+\def\xdp@thanksto{\\[\headsep]}
+\renewcommand\thanks[1]{\global\def\xdp@thanksto{\\\begin{center}\itshape #1\end{center}\noindent}}
+
 % Override the title format
 \def\@maketitle{%
     \thispagestyle{plain}%
-    \noindent{\Huge\Xerdi's Documentation Project\\\@title~\hrulefill}\\}
+    \noindent{\Huge\Xerdi's Documentation Project\\\@title~\hrulefill}\xdp@thanksto}

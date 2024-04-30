@@ -1,13 +1,16 @@
 \documentclass{xdpdoc}
-\usepackage{multicol}
+%\usepackage{multicol}
 \usepackage{enumitem}
 \usepackage{calc}
 \usepackage{biblatex}
 \usepackage{dirtree}
 \usepackage{wrapfig2}
+\usepackage{listings}
 %\usepackage{showframe}
 
-\title{Packaging Guidelines}
+\title{Packaging Guidelines%
+    \thanks{This document corresponds to package \texttt{texmf-packaging} version \gitversion\ written on \gitdate.}%
+}
 
 \newlist{rules}{enumerate}{2}
 \setlist[rules]{
@@ -32,7 +35,7 @@
     \section*{Introduction}
 
     Xerdi's Documentation Project (XDP) is part of an Open Source initiative of Xerdi, that aims to bring free software to the world of corporate businesses.
-    The guidelines provided by this document state guidelines for working on the XDP project itself, any packages derived from the XDP project, or typical \LuaLaTeX packages containing both Lua and \TeX related sources, like \texttt{gitinfo-lua} and \texttt{lua-placeholders}.
+    The guidelines provided by this document state guidelines for working on the XDP project itself, any packages derived from the XDP project, or typical \LuaLaTeX packages containing both Lua and \TeX related sources, like \texttt{gitinfo-lua}~\cite{gitinfo-lua}.
 
 
     \section{Programs and Compilers}
@@ -66,7 +69,7 @@
             .2 LICENSE.txt.
         }
         \caption{Project Directory Structure}\label{fig:project dir}
-%        \vspace{-2.5cm}
+        \vspace{-.5cm}
     \end{wrapfigure}
 
     \section{Project Directory Structure}\label{sec:pds}
@@ -137,6 +140,27 @@
     All package sources must be licensed as Free Software.
     All \LaTeX\ related files within XDP and its derived packages are all to be licensed under the LPPLv1.3c license.
     Platform-dependent program's sources should instead be licensed under the GPLv2 license or any higher version of the GPL\@.
+
+    \clearpage
+
+    \section{Examples}
+
+    \subsection{Package Manual Example}
+
+    \lstinputlisting[style=tex,frame=single,caption={Example of a package manual file \texttt{doc/my-package.tex}},morekeywords={maketitle,gitversion,gitdate,tableofcontents,columnbreak,printindex}]{examples/example-manual.tex}
+
+    \clearpage
+    \subsection{Latexmkrc Example}
+
+    \lstinputlisting[language=Perl,frame=single,caption={Example of a latemk configuration file \texttt{doc/latexmkrc}}]{latexmkrc}
+
+    \subsection{Makefile Example}
+
+    \subsection{Build Action Example}
+    \lstinputlisting[style=yaml,frame=single]{examples/build.yaml}
+
+    \subsection{Publish Action Example}
+    \lstinputlisting[style=yaml,frame=single]{examples/publish.yaml}
 
     \printbibliography
 %    \end{multicols}

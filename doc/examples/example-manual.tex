@@ -1,0 +1,31 @@
+% Suitable document classes are ltxdoc and xdpdoc
+\documentclass{ltxdoc}
+\usepackage[english]{babel}
+
+% Use the titlepage option for setting \author and \date automatically
+% Use the authors option in order to base author and date on the last commit
+% The rootdir option is an optimization for continuous compilation
+% with latexmk's -pvc option
+\usepackage[titlepage,authors,rootdir]{gitinfo-lua}
+
+% Decide wether you'd like to use multicols.
+% This would only be useful for sections containing a lot of texts, not code
+\usepackage{multicol}
+
+\begin{document}
+    % Setting the title just before showing it
+    \title{My Package Manual%
+        % Add a footnote which states package version and date
+        \thanks{%
+            This manual corresponds to \texttt{my-package}
+            version \gitversion\ written on \gitdate.}}%
+    \maketitle
+    % A summary for this document
+    \begin{abstract}
+        ...
+    \end{abstract}
+    % Show the table of contents and macro index in a two-sided column view
+    \begin{multicols}{2}
+        \tableofcontents \columnbreak \printindex
+    \end{multicols}
+\end{document}

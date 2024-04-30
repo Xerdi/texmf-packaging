@@ -1,0 +1,72 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          path: my-package
+          fetch-tags: true
+          fetch-depth: 0
+      - name: Check out texmf
+        uses: actions/checkout@v4
+        with:
+          repository: Xerdi/texmf-packaging
+          path: texmf
+      - name: Run the build process with Docker
+        uses: addnab/docker-run-action@v3
+        with:
+          image: maclotsen/texlive:with-gf
+          shell: bash
+          options: --rm -i -v ${{ github.workspace }}/texmf:/root/texmf -v ${{ github.workspace }}:/build
+          run: |
+            git config --global --add safe.directory /build/my-package
+            make -C my-package package
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref_name }}
+          draft: true
+          body: |
+            Release for version ${{ github.ref_name }}
+      - name: 'Upload Release Asset: CTAN Upload'
+        id: upload_release_asset_ctan_upload
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/my-package/my-package-${{ github.ref_name }}.tar.gz
+          asset_name: my-package-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
+      - name: 'Upload Release Asset: TDS Archive'
+        id: upload_release_asset_tds_archive
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/my-package/my-package-${{ github.ref_name }}.tds.tar.gz
+          asset_name: my-package-${{ github.ref_name }}.tds.tar.gz
+          asset_content_type: application/gzip
+      - name: 'Upload Release Asset: Manual'
+        id: upload_release_asset_manual
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/my-package/doc/my-package.pdf
+          asset_name: my-package-${{ github.ref_name }}.pdf
+          asset_content_type: application/pdf
