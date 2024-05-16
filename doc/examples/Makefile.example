@@ -1,0 +1,37 @@
+CONTRIBUTION = my-package
+MANUAL = example-manual
+VERSION = "$(shell git describe --tags --always)"
+
+# Let latexmk decide whether to recompile the docs or not
+# Also the bundling targets, as you'd typically expect them to be updated
+.PHONY: manual tds_archive ctan_upload
+
+all: manual tds_archive ctan_upload
+
+# Either named manual, build or docs is fine
+manual:
+	cd doc && latexmk -lualatex "$(MANUAL)"
+	cd doc && latexmk -c "$(MANUAL)"
+
+# Every TeX directory needs to be post-fixed with:
+#   <program>/<package name>
+# For example,
+#   doc/example-manual.tex
+# becomes
+#   doc/lualatex/my-package/example-manual.tex
+# with the exception for the scripts directory,
+# which only takes the package name as post-fix
+tds_archive:
+	tar --transform "s,^doc,doc/lualatex/$(CONTRIBUTION)," \
+		--transform "s,scripts,scripts/$(CONTRIBUTION)," \
+		--transform "s,^tex,tex/lualatex/$(CONTRIBUTION)," \
+		-czvf "$(CONTRIBUTION)-$(VERSION).tds.tar.gz" doc scripts tex
+
+# Every directory is given preceded with a dot,
+# so that the current working directory (.)
+# will be replaced with the package name,
+# which must be the first directory level in the tar
+ctan_upload:
+	tar --transform "s,^\.,$(CONTRIBUTION)," \
+		--exclude=doc/Makefile.example \
+	  	-czvf "$(CONTRIBUTION)-$(VERSION).tar.gz" ./doc ./scripts ./tex

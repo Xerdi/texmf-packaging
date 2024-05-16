@@ -1,0 +1,124 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lstlangmake}[2024/05/16 Xerdi's Make Listings Package]
+
+\RequirePackage{xdp-pkg}
+
+% --- color definitions ---
+\providecolor{mktext}    {RGB}{000, 043, 054}
+\providecolor{mktarget}  {RGB}{22, 33, 100}
+\providecolor{mkstring}  {RGB}{000, 127, 127}
+\providecolor{mkvariable}{RGB}{038, 139, 210}
+\providecolor{mkkeyword} {RGB}{133, 153, 000}
+\providecolor{mklinecont}{RGB}{220, 050, 047}
+\providecolor{mkcomment} {RGB}{088, 110, 117}
+\providecolor{mkcommand} {RGB}{9, 29, 40}
+
+% --- auxiliary macros for styles ---
+\newcommand\mktextstyle{\color{mktext}}
+\newcommand\mktargetstyle{\color{dark}}
+\newcommand\mkstringstyle{\color{success}}
+\newcommand\mkvariablestyle{\color{info}}
+\newcommand\mkkeywordstyle{\color{secondary}}
+\newcommand\mklinecontstyle{\color{danger}}
+\newcommand\mkcommentstyle{\slshape\color{muted!80!black}}
+\newcommand\mkcommandstyle{\color{dark}}
+
+% --- context switches ---
+\newif\iftarget@make@
+\newif\iflinecont@make@
+
+% --- hook into listings to keep track of context ---
+\lst@AddToHook{InitVarsBOL}
+{%
+  \iflinecont@make@%
+    \global\target@make@false%
+  \else
+    \global\target@make@true%
+  \fi
+  \global\linecont@make@false%
+}
+
+\lst@AddToHook{Output}
+{%
+  \ifnum\lst@mode=\lst@Pmode%
+      \iftarget@make@%
+        \gdef\globalstyle@make{\the@lststyle}%
+        \def\lst@thestyle{\mktargetstyle}%
+      \fi
+    \fi
+  \ifnum\lst@mode=\lst@Pmode% only test for keyword if we're in "processing" mode
+    \lsthk@DetectKeywords%
+  \fi
+}
+
+\lstdefinestyle{make}
+{
+  upquote=true,
+  showstringspaces=false,
+  basicstyle=\ttfamily\scriptsize\mktextstyle,
+  sensitive=true,
+  alsoletter=.-,
+  keywords = {.CC,.CFLAGS,.PHONY,.SUFFIXES,SUFFIX,CPP_},
+  keywordstyle = \mkkeywordstyle,
+  moredelim=[is][\mkvariablestyle(\aftergroup\closingparen@make]{(}{)},
+  moredelim=*[l][\mkcommandstyle]{\^^I},
+  morestring=[b]',
+  morestring=[b]",
+  stringstyle=\mkstringstyle,
+  literate =
+    {\%}{{{\mkvariablestyle\%}}}1
+    {\$}{{{\mkvariablestyle\$}}}1
+    {\$*}{{{\mkvariablestyle\$*}}}2
+    {\\}{{{\mklinecontstyle\lstum@backslash}}}1,
+  MoreSelectCharTable =
+    \processColon@make
+    \processEqual@make
+    \processBackslash@make
+    \processTab@make,
+  morecomment = [l]{\#},
+  commentstyle = \mkcommentstyle,
+}
+
+% --- helper macros ---
+\newcommand\closingparen@make{{\mkvariablestyle)}}
+
+\newcommand\processEqual@make
+{%
+  \lst@DefSaveDef{`=}\equal@make%
+  {%
+    \equal@make%
+    \global\target@make@false%
+    \def\lst@thestyle{\globalstyle@make}%
+  }%
+}
+
+\newcommand\processColon@make
+{%
+  \lst@DefSaveDef{`:}\colon@make%
+  {%
+    \colon@make%
+    \global\target@make@false%
+    \def\lst@thestyle{\globalstyle@make}%
+  }%
+}
+
+\newcommand\processBackslash@make
+{%
+  \lst@DefSaveDef{`\\}\backslash@make%
+  {%
+    \backslash@make%
+    \ifnum\lst@mode=\lst@Pmode%
+      \global\linecont@make@true%
+      \def\lst@thestyle{\globalstyle@make}%
+    \fi
+  }%
+}
+
+\newcommand\processTab@make
+{%
+  \lst@DefSaveDef{`^^I}\tabchar@make%
+  {%
+    \tabchar@make%
+    \global\target@make@false%
+  }%
+}
