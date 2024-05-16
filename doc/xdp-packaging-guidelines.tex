@@ -7,36 +7,106 @@
 \usepackage{wrapfig2}
 \usepackage{listings}
 %\usepackage{showframe}
+\usepackage{tikz}
+%\usepackage{smartdiagram}
+%\usesmartdiagramlibrary{additions}
+\tikzset{
+%    every shadow/.style={
+%        fill=none,
+%        shadow xshift=0pt,
+%        shadow yshift=0pt},
+    balloon/.style={
+%        draw=none,
+        minimum width=2cm,minimum height=1cm,
+        align=center,
+        rounded corners=.8ex
+    }
+}
+%\tikzset{module/.append style={top color=\col,bottom color=\col}}
+%
+%\smartdiagramset{%
+%    set color list={primary,danger,secondary},
+%    text width=2cm,
+%    text color=muted,
+%    border color=none,
+%    arrow tip=stealth,
+%    arrow line width=2pt,
+%    additions={
+%        additional item fill color=warning,
+%        additional item border color=none,
+%        additional item shadow=drop shadow,
+%        additional item font=\mutedcolor,
+%        additional item text width=2.2cm,
+%        additional item offset=2cm,
+%        additional arrow line width=2pt,
+%        additional arrow tip=stealth,
+%        additional arrow style={stealth}-,
+%        additional arrow color=warning,
+%    }
+%}
 
 \title{Packaging Guidelines%
-    \thanks{This document corresponds to package \texttt{texmf-packaging} version \gitversion\ written on \gitdate.}%
+\thanks{This document corresponds to package \texttt{texmf-packaging} version \gitversion\ written on \gitdate.}%
 }
 
-\newlist{rules}{enumerate}{2}
-\setlist[rules]{
-    align=left,
-    leftmargin = 10pt,
-    parsep=5pt,
-    itemsep=0pt,
-%    labelindent = \parindent,
-    listparindent = \parindent,
-    labelwidth=0pt,
-    itemindent=!
-}
-\setlist[rules,1]{label={\thesection.\arabic*}}
-\setlist[rules,2]{label={\alph*}}
+%\newlist{rules}{enumerate}{2}
+%\setlist[rules]{
+%    align=left,
+%    leftmargin = 10pt,
+%    parsep=5pt,
+%    itemsep=0pt,
+%%    labelindent = \parindent,
+%    listparindent = \parindent,
+%    labelwidth=0pt,
+%    itemindent=!
+%}
+%\setlist[rules,1]{label={\thesection.\arabic*}}
+%\setlist[rules,2]{label={\alph*}}
 
 \addbibresource{xdp-packaging.bib}
 
 % Document
 \begin{document}
     \maketitle
+
 %    \begin{multicols}{2}
     \section*{Introduction}
 
-    Xerdi's Documentation Project (XDP) is part of an Open Source initiative of Xerdi, that aims to bring free software to the world of corporate businesses.
-    The guidelines provided by this document state guidelines for working on the XDP project itself, any packages derived from the XDP project, or typical \LuaLaTeX packages containing both Lua and \TeX related sources, like \texttt{gitinfo-lua}~\cite{gitinfo-lua}.
+        \begin{wrapfigure}{r}{8cm}%
+%    \begin{figure}[ht]
+        \vspace{-1cm}%
+        \centering%
+        \begin{tikzpicture}[align=center]
+            \node[circle,draw=muted,minimum size=5cm,line width=2pt,dashed] at (0,0) (c1) {};
+%            \node[circle,draw=muted,minimum size=5cm,line width=2pt,dashed] at (5,0) (c2) {};
+%            \node[circle,draw=muted,minimum size=5cm,line width=2pt,dashed] at (-5,0) (c2) {};
+            \node[circle,draw=muted,minimum size=7cm,line width=2pt,dashed] at (0,0) (c2) {};
+%            \node[circle,draw=muted,minimum size=4cm,line width=2pt,dashed] at (0,1) (c3) {};
+            \node[balloon,fill=primary,font=\xerdifont\color{white}] (xerdi) at (90:3cm) {Xerdi};
+            \node[balloon,draw,fill=white,font=\bfseries] (ctan) at (-30:3cm) {CTAN};
+            \node[balloon,draw,fill=white,font=\bfseries] (tl) at (-150:3cm) {\TeXLive};
+            \node[balloon,draw,fill=white,font=\bfseries] (gh) at (0,-1) {GitHub};
+            \node[font=\Large\itshape] (dev) at (0, 1) {Test \&\\Development\\Cycle};
+            \node[font=\Large\itshape] (delivery) at (0, -4) {Delivery Cycle};
+%            \node[balloon,fill=info,font=\bfseries\color{white}] (author) at (-5,3) {Author};
+%            \node[balloon,fill=info,font=\bfseries\color{white}] (others) at (5,3) {Free Friends};
+            \draw[line width=3pt,-{stealth}] (65:3cm) to[bend left=37.5] (-15:3cm);
+            \draw[line width=3pt,-{stealth}] (-50:3cm) to[bend left=37.5] (-130:3cm);
+            \draw[line width=3pt,-{stealth}] (-165:3cm) to[bend left=37.5] (115:3cm);
+            \draw[line width=2pt,-{stealth}] (1.55, 2.25) to[bend left=37.5] (1.55,-.25);
+            \draw[line width=2pt,-{stealth}] (-1.55,-.25) to[bend left=37.5] (-1.55, 2.25);
+        \end{tikzpicture}%
+        \caption{Test \& Development- and Delivery Cycle of Xerdi's Documentation Project}\label{fig:updates}%
+%        \vspace{-1cm}%
+%    \end{figure}
+    \end{wrapfigure}
 
+    Xerdi's Documentation Project (XDP) is part of an Open Source initiative of Xerdi, that aims to bring free software to the world of corporate businesses.
+    The guidelines provided by this document state guidelines for working on the XDP project itself or any packages derived from the XDP project.
+    However, most parts of these guidelines can be of guidance for any \LaTeX package development project, since any package should aim for the \TeXLive distribution and must do so by uploading it to the Comprehensive \TeX Archive Network (CTAN).
+    The guidelines will never prevail over their guidelines, but rather aims to extend and unify it.
+    The guidelines also contain best practices for version control with Git.
+    For collaboration purposes, Xerdi uses GitHub for repository hosting and GitHub Actions for continuous integration and delivery purposes.
 
     \section{Programs and Compilers}
 
@@ -69,8 +139,9 @@
             .2 LICENSE.txt.
         }
         \caption{Project Directory Structure}\label{fig:project dir}
-        \vspace{-.5cm}
+        \vspace{-5pt}
     \end{wrapfigure}
+
 
     \section{Project Directory Structure}\label{sec:pds}
 
@@ -80,6 +151,7 @@
     However, for small packages, every file should be placed in a single directory, which is the preferred choice of CTAN and by default supported with \TeX distributions thanks to the \texttt{TEXMFDOTDIR} variable.
     For large packages that do not work properly with \texttt{PKGHOME} variable, the TDS-packaged layout should be used instead~\cite{ctan:help:tds}.
     XDP packages use the slimmer structure, as they typically ship Lua scripting files.
+
 
     \section{Package Bundling}\label{sec:bundling}
 
@@ -93,6 +165,7 @@
     These auxiliary files must be excluded in any of the described directory structures in section~\ref{sec:pds}.
     This can be avoided by either cleaning your output directory with \texttt{latexmk -c \meta{package name}} after the compilation of the manual or by explicitly picking files with the \texttt{tar} command when bundling the package.
 
+
     \section{Package Versioning}
 
     Packages must at least have a distinct date and should additionally have a version for every release to come.
@@ -100,12 +173,14 @@
     Both the main Lua file, likely called \meta{package name}\texttt{.lua}, and all \TeX related files, like \texttt{.cls} or \texttt{.sty} files, should have included an updated version and date in its sources, prior to creating a release (see section~\ref{sec:submission}).
     The version and date must correspond with the administration of the Version Control system (see section~\ref{sec:git}).
 
+
     \section{Package Submission}\label{sec:submission}
 
     Before uploading the package bundle to CTAN, the bundle should be reviewed by a \textit{human} first.
     For submitting an update to a pacakge, it's best to first browse to the package url on CTAN and secondly hit the upload button.
     That way, earlier provided information will be automatically filled in, i.e.\ the suggested CTAN directory.
     For more information on uploading packages to CTAN, read the upload addendum of CTAN~\cite{ctan:help:addendum}.
+
 
     \section{Version Control}\label{sec:git}
 
@@ -115,6 +190,7 @@
     Package versions should be managed using Git \textit{signed} tags.
     The Git tag must point to a revision where hardcoded versions and dates are updated in all applicable sources of the package.
     Package manuals should address the package versions and dates with \texttt{gitinfo-lua}~\cite{gitinfo-lua}, instead of inserting a hardcoded version and date.
+
 
     \section{Continuous Integration and Delivery}
 
@@ -135,6 +211,7 @@
     The GitHub Release message must be reviewed and corrected by the package maintainer.
     The GitHub Release must either be made publicly or deleted by the package maintainer.
 
+
     \section{Licensing}
 
     All package sources must be licensed as Free Software.
@@ -143,6 +220,7 @@
 
     \clearpage
 
+
     \section{Examples}
 
     \subsection{Package Manual Example}
@@ -150,6 +228,7 @@
     \lstinputlisting[style=tex,frame=single,caption={Example of a package manual file \texttt{doc/my-package.tex}},morekeywords={maketitle,gitversion,gitdate,tableofcontents,columnbreak,printindex}]{examples/example-manual.tex}
 
     \clearpage
+
     \subsection{Latexmkrc Example}
 
     \lstinputlisting[language=Perl,frame=single,caption={Example of a latemk configuration file \texttt{doc/latexmkrc}}]{latexmkrc}
