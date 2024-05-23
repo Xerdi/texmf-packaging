@@ -2,7 +2,7 @@
 \ProvidesClass{xdpdoc}[0.0.1 Xerdi's Documentation Class]
 
 % XDP packages always use gitinfo-lua for setting versions in manuals
-\RequirePackage[titlepage,authors]{gitinfo-lua}
+\RequirePackage[titlepage,authors,rootdir]{gitinfo-lua}
 
 % Using Komma Scripts' article class, without sans-serif titlings
 \LoadClass[sfdefaults=false]{scrartcl}

@@ -6,64 +6,21 @@
 \usepackage{dirtree}
 \usepackage{wrapfig2}
 \usepackage{listings}
-%\usepackage{showframe}
 \usepackage{tikz}
-%\usepackage{smartdiagram}
-%\usesmartdiagramlibrary{additions}
+
 \tikzset{
-%    every shadow/.style={
-%        fill=none,
-%        shadow xshift=0pt,
-%        shadow yshift=0pt},
     balloon/.style={
-        %        draw=none,
         minimum width=2cm,minimum height=1cm,
         align=center,
         rounded corners=.8ex
     }
 }
-%\tikzset{module/.append style={top color=\col,bottom color=\col}}
-%
-%\smartdiagramset{%
-%    set color list={primary,danger,secondary},
-%    text width=2cm,
-%    text color=muted,
-%    border color=none,
-%    arrow tip=stealth,
-%    arrow line width=2pt,
-%    additions={
-%        additional item fill color=warning,
-%        additional item border color=none,
-%        additional item shadow=drop shadow,
-%        additional item font=\mutedcolor,
-%        additional item text width=2.2cm,
-%        additional item offset=2cm,
-%        additional arrow line width=2pt,
-%        additional arrow tip=stealth,
-%        additional arrow style={stealth}-,
-%        additional arrow color=warning,
-%    }
-%}
 
 \title{Packaging Guidelines%
 \thanks{This document corresponds to package \texttt{texmf-packaging} version \gitversion\ written on \gitdate.}%
 }
 
 \setkomafont{captionlabel}{\color{dark}}
-
-%\newlist{rules}{enumerate}{2}
-%\setlist[rules]{
-%    align=left,
-%    leftmargin = 10pt,
-%    parsep=5pt,
-%    itemsep=0pt,
-%%    labelindent = \parindent,
-%    listparindent = \parindent,
-%    labelwidth=0pt,
-%    itemindent=!
-%}
-%\setlist[rules,1]{label={\thesection.\arabic*}}
-%\setlist[rules,2]{label={\alph*}}
 
 \addbibresource{xdp-packaging.bib}
 
@@ -73,39 +30,30 @@
 
     \begin{multicols}{2}
         \section*{Introduction}
-        Xerdi's Documentation Project (XDP) is part of an Open Source initiative of Xerdi, that aims to bring free software to the world of corporate businesses.
+        Xerdi's Documentation Project (XDP) is part of an Open Source initiative of Xerdi that aims to bring free software to the world of corporate businesses.
         The guidelines provided by this document state guidelines for working on the XDP project itself or any packages derived from the XDP project.
 
         However, most parts of these guidelines can be of guidance for any \LaTeX package development project, since any package should aim for the \TeXLive distribution and must do so by uploading it to the Comprehensive \TeX Archive Network (CTAN).
         The guidelines will never prevail over their guidelines, but rather aims to extend and unify it.
 
         The guidelines also contain best practices for version control with Git.
-        For collaboration purposes, Xerdi uses GitHub for repository hosting and GitHub Actions for continuous integration and delivery purposes.
-        However, this isn't necessary for every package, as there are plenty sufficient alternatives, like GitLab with GitLab CI for example.
+        For collaboration, Xerdi uses GitHub for repository hosting and GitHub Actions for continuous integration and delivery purposes.
+        However, this isn't necessary for every package, as there are plenty of sufficient alternatives, like GitLab with GitLab CI, for example.
 
 
         \section{Operating Systems and \TeX Distributions}
         XDP is designed and tested to run exclusively on GNU/Linux-based systems, with a specific focus on Ubuntu 22.04 and RHEL9 environments.
         This strategic decision aligns with Xerdi's commitment to open-source principles and robust computing platforms.
 
-        %        \begin{wrapfigure}{r}{8cm}%
-%    \begin{figure}[ht]
-%        \vspace{-1cm}%
-%        \centering%
         \begin{tikzpicture}[align=center]
             \node[circle,draw=muted,minimum size=5cm,line width=2pt,dashed] at (0,0) (c1) {};
-%            \node[circle,draw=muted,minimum size=5cm,line width=2pt,dashed] at (5,0) (c2) {};
-%            \node[circle,draw=muted,minimum size=5cm,line width=2pt,dashed] at (-5,0) (c2) {};
             \node[circle,draw=muted,minimum size=7cm,line width=2pt,dashed] at (0,0) (c2) {};
-%            \node[circle,draw=muted,minimum size=4cm,line width=2pt,dashed] at (0,1) (c3) {};
             \node[balloon,fill=primary,font=\xerdifont\color{white}] (xerdi) at (90:3cm) {Xerdi};
             \node[balloon,draw,fill=white,font=\bfseries] (ctan) at (-30:3cm) {CTAN};
             \node[balloon,draw,fill=white,font=\bfseries] (tl) at (-150:3cm) {\TeXLive};
             \node[balloon,draw,fill=white,font=\bfseries] (gh) at (0,-1) {GitHub};
             \node[font=\Large\itshape] (dev) at (0, 1) {Test \&\\Development\\Cycle};
             \node[font=\Large\itshape] (delivery) at (0, -4) {Delivery Cycle};
-%            \node[balloon,fill=info,font=\bfseries\color{white}] (author) at (-5,3) {Author};
-%            \node[balloon,fill=info,font=\bfseries\color{white}] (others) at (5,3) {Free Friends};
             \draw[line width=3pt,-{stealth}] (65:3cm) to[bend left=37.5] (-15:3cm);
             \draw[line width=3pt,-{stealth}] (-50:3cm) to[bend left=37.5] (-130:3cm);
             \draw[line width=3pt,-{stealth}] (-165:3cm) to[bend left=37.5] (115:3cm);
@@ -113,15 +61,11 @@
             \draw[line width=2pt,-{stealth}] (-1.55,-.25) to[bend left=37.5] (-1.55, 2.25);
         \end{tikzpicture}%
         \captionof{figure}{Test \& Development- and Delivery Cycle of Xerdi's Documentation Project}\label{fig:updates}%
-%        \caption{Test \& Development- and Delivery Cycle of Xerdi's Documentation Project}\label{fig:updates}%
-%        \vspace{-1cm}%
-%    \end{figure}
-%    \end{wrapfigure}
 
         Xerdi's proactive approach stems from concerns regarding the restrictions imposed by proprietary operating systems like Windows NT and macOS, which are perceived as encroaching upon computer freedom.
 
         However, it's essential to acknowledge that developing a \LaTeX package on a GNU/Linux platform doesn't limit its compatibility solely to that environment.
-        \LaTeX, by its nature, is cross-platform, and packages should strive to maintain this characteristic.
+        \LaTeX by its nature is cross-platform, and packages should strive to maintain this characteristic.
         Therefore, package maintainers should avoid introducing platform-dependent libraries and binaries.
         Alternatively, if such components are necessary, they should be included in a way that facilitates cross-compilation, ensuring compatibility across different operating systems.
         For instance, leveraging tools like GCC can aid in achieving this goal.
@@ -131,7 +75,7 @@
         To ensure consistency and efficiency in package development, all deliverables of a package should be creatable with the \texttt{make} program.
         All documentation sources should be compiled with \LuaLaTeX.
         For managing glossaries, acronyms and definitions with \BibTeX, program \texttt{bib2gls}~\cite{bib2gls} is used, which requires Java version 8 or higher.
-        Additionally, the \texttt{latexmk}~\cite{latexmk} program can be used as compiler utility.
+        Additionally, the \texttt{latexmk}~\cite{latexmk} program can be used as a compiler utility.
 
 
         \section{Project Directory Structure}\label{sec:pds}
@@ -144,8 +88,6 @@
         XDP packages use the slimmer structure, as they typically ship Lua scripting files.
 
         \columnbreak
-        %    \begin{wrapfigure}{r}{7cm}
-%        \vspace*{-1.1cm}%
         \dirtree{%
             .1 \meta{project dir}.
             .2 .github.
@@ -167,9 +109,6 @@
             .2 LICENSE.txt.
         }
         \captionof{figure}{Project Directory Structure}\label{fig:project dir}
-%        \caption{Project Directory Structure}\label{fig:project dir}
-%        \vspace{-5pt}
-%    \end{wrapfigure}
 
 
         \section{Package Bundling}\label{sec:bundling}
@@ -215,7 +154,7 @@
 
         Any GitHub Action should use the Docker image originating from \texttt{xdp-docker}~\cite{xdp-docker}.
         Any GitHub Action should use the appropriate \texttt{TEXMFHOME} repository.
-        For XDP packages this typically is \url{https://github.com/Xerdi/texmf-packaging}.
+        For XDP packages, this typically is \url{https://github.com/Xerdi/texmf-packaging}.
 
         A project should have a `build' GitHub Action.
         The build action should trigger for the master/main branch and for every opened or synchronized pull-request.
@@ -248,8 +187,6 @@
 
     \lstinputlisting[style=tex,frame=single,caption={Example of a package manual file \texttt{doc/my-package.tex}},morekeywords={maketitle,gitversion,gitdate,tableofcontents,columnbreak,printindex}]{examples/example-manual.tex}
 
-%    \clearpage
-
     \subsection{Latexmkrc Example}
 
     \lstinputlisting[language=Perl,frame=single,caption={Example of a latemk configuration file \texttt{doc/latexmkrc}}]{latexmkrc}
@@ -266,5 +203,4 @@
     \lstinputlisting[style=yaml,frame=single,caption={Example of continuous delivery \texttt{.github/workflows/publish.yaml}}]{examples/publish.yaml}
 
     \printbibliography
-%    \end{multicols}
 \end{document}
