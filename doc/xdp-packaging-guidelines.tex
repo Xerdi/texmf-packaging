@@ -173,13 +173,14 @@
         ~/src/latex/a-package
         \end{lstlisting}
         Or use [... \texttt{auxtrees remove} ...] instead, to prevent a package from being found.
+        This way you can manage which development packages are active or not on your local development environment, which in some complex scenarios might be necessary.
 
         \section{Package Bundling}\label{sec:bundling}
 
         Packages must be bundled with either \texttt{zip} or \texttt{tar.gz} extension.
         XDP prefers the \texttt{tar.gz} extension, because \texttt{tar} is by default present on GNU/Linux platforms.
         The archive layout must be one of the layouts described in section~\ref{sec:pds}.
-        An additional \texttt{tds.tar.gz} archive should be created, however, not to be included in the toplevel of the package archive as some guidelines may mention.
+        An additional \texttt{tds.zip} archive should be created, however, not to be included in the toplevel of the package archive as some guidelines may mention.
         The additional TDS archive is helpful for users that want to manually install the package without the support of the \texttt{tlmgr} program.
         The TDS archive may be included a GitHub release page (see section~\ref{sec:cicd}).
         All archiving procedures should be available as targets in the projects' Makefile.
