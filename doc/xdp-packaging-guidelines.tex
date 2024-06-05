@@ -29,21 +29,30 @@
     \maketitle
 
     \begin{multicols}{2}
-        \section*{Introduction}
-        Xerdi's Documentation Project (XDP) is part of an Open Source initiative of Xerdi that aims to bring free software to the world of corporate businesses.
-        The guidelines provided by this document state guidelines for working on the XDP project itself or any packages derived from the XDP project.
+        \noindent{\hspace{\parindent}\parbox{\linewidth-\parindent}{%
+            \sffamily\noindent
+            This document offers extended guidelines and best practices for \LaTeX package development, bundling, submission and version control, within the scope of Xerdi's Documentation Project.
+        }\\}
 
-        However, most parts of these guidelines can be of guidance for any \LaTeX package development project, since any package should aim for the \TeXLive distribution and must do so by uploading it to the Comprehensive \TeX Archive Network (CTAN).
-        The guidelines will never prevail over their guidelines, but rather aims to extend and unify it.
+        \section*{Introduction}
+        Xerdi's Documentation Project (XDP)
+        is part of an Open Source initiative of Xerdi that aims to bring free software to the world of corporate businesses.
+        The guidelines provided by this document state guidelines for working on the XDP project itself or any packages
+        derived from the XDP project.
+
+        However, most parts of these guidelines can be of guidance for any \LaTeX package development project,
+        since any package should aim for the \TeXLive distribution.
+        One must do so by uploading it to the Comprehensive \TeX Archive Network (CTAN),
+        as explicitly stated by the \TeXLive package contributions~\cite{texlive-packaging}.
+        The guidelines will never prevail over their guidelines, but rather aims to extend it,
+        yet not interfere with it in any way.
 
         The guidelines also contain best practices for version control with Git.
-        For collaboration, Xerdi uses GitHub for repository hosting and GitHub Actions for continuous integration and delivery purposes.
-        However, this isn't necessary for every package, as there are plenty of sufficient alternatives, like GitLab with GitLab CI, for example.
-
-
-        \section{Operating Systems and \TeX Distributions}
-        XDP is designed and tested to run exclusively on GNU/Linux-based systems, with a specific focus on Ubuntu 22.04 and RHEL9 environments.
-        This strategic decision aligns with Xerdi's commitment to open-source principles and robust computing platforms.
+        For collaboration,
+        Xerdi uses GitHub for repository hosting and GitHub Actions for continuous integration and delivery purposes.
+        However, this isn't necessary for every package,
+        as there are plenty of sufficient alternatives, like GitLab with GitLab CI,
+        which would be more cost-efficient for in-house solutions.
 
         \begin{tikzpicture}[align=center]
             \node[circle,draw=muted,minimum size=5cm,line width=2pt,dashed] at (0,0) (c1) {};
@@ -62,32 +71,65 @@
         \end{tikzpicture}%
         \captionof{figure}{Test \& Development- and Delivery Cycle of Xerdi's Documentation Project}\label{fig:updates}%
 
-        Xerdi's proactive approach stems from concerns regarding the restrictions imposed by proprietary operating systems like Windows NT and macOS, which are perceived as encroaching upon computer freedom.
+        \section{Operating Systems and \TeX Distributions}
+        XDP is designed and tested to run exclusively on GNU/Linux-based systems, with a specific focus on Ubuntu 22.04 and RHEL9 environments.
+        This strategic decision aligns with Xerdi's commitment to open-source principles and robust computing platforms.
+        Do note the fact that these distributions are not seen as free distros by the Free Software Foundation
+        (FSF)~\cite{free-distros}.
 
-        However, it's essential to acknowledge that developing a \LaTeX package on a GNU/Linux platform doesn't limit its compatibility solely to that environment.
-        \LaTeX by its nature is cross-platform, and packages should strive to maintain this characteristic.
+        The reason for Xerdi to focus on lesser free distributions is the mission
+        to create a bridge between the world of free software and corporate businesses,
+        which typically require robust and secure computing platforms.
+
+        However,
+        it's essential to acknowledge
+        that developing a \LaTeX package on a GNU/Linux platform doesn't limit its compatibility solely to that environment.
+        \LaTeX by its nature is cross-platform and packages should strive to maintain this characteristic.
         Therefore, package maintainers should avoid introducing platform-dependent libraries and binaries.
-        Alternatively, if such components are necessary, they should be included in a way that facilitates cross-compilation, ensuring compatibility across different operating systems.
-        For instance, leveraging tools like GCC can aid in achieving this goal.
+        Alternatively, if such components are necessary, they should be included in a way that facilitates cross-compilation,
+        ensuring compatibility across different operating systems.
+        For instance, leveraging tools like GCC and Automake can aid in achieving this goal.
 
 
         \section{Programs and Compilers}
-        To ensure consistency and efficiency in package development, all deliverables of a package should be creatable with the \texttt{make} program.
+        To ensure consistency and efficiency in package development,
+        all deliverables of a package should be creatable with the \texttt{make} program.
         All documentation sources should be compiled with \LuaLaTeX.
-        For managing glossaries, acronyms and definitions with \BibTeX, program \texttt{bib2gls}~\cite{bib2gls} is used, which requires Java version 8 or higher.
+        For managing glossaries, acronyms and definitions with \BibTeX, program \texttt{bib2gls}~\cite{bib2gls} is used,
+        which requires Java version 8 or higher.
         Additionally, the \texttt{latexmk}~\cite{latexmk} program can be used as a compiler utility.
 
 
         \section{Project Directory Structure}\label{sec:pds}
 
-        XDP provides a custom \texttt{texmf.cnf} configuration file supporting \texttt{PKGHOME} directory.
-        It does not intend to \textit{change} the definition of \texttt{TEXMFHOME}, which works for TDS standard~\cite{tds} directory structures, but rather extend the \texttt{TEXINPUTS} and \texttt{LUAINPUTS} variables with \texttt{PKGHOME}, which provides a slimmer structure for packages' project directory structure.
-        This \texttt{TEXMF} configuration brings support for your \TeX distribution to \textit{`large packages'} as stated by the CTAN Team~\cite{ctan:help:upload}, which is \textit{`improved by a single extra layer of directories'} as seen in figure~\ref{fig:project dir}.
-        However, for small packages, every file should be placed in a single directory, which is the preferred choice of CTAN and by default supported with \TeX distributions thanks to the \texttt{TEXMFDOTDIR} variable.
-        For large packages that do not work properly with \texttt{PKGHOME} variable, the TDS-packaged layout should be used instead~\cite{ctan:help:tds}.
-        XDP packages use the slimmer structure, as they typically ship Lua scripting files.
-
-        \columnbreak
+        To decide which project directory structure suits best, there are in total three available options to choose from as far as I know, which are:
+        \begin{enumerate}
+            \item Top-level only; which is the case for most of the \LaTeX packages I came acros so far.
+            It simply means a single directory and works out of the box thanks to the \texttt{TEXMFDOTDIR} variable.
+            This is also the preferred choice of CTAN and \TeXLive.
+            \item Single layered; which became the most relevant for XDP packages in the end.
+            It's suitable for \textit{`large packages'} as stated by the CTAN Team~\cite{ctan:help:upload},
+            which means \textit{`improved by a single extra layer of directories'} as seen in figure~\ref{fig:project dir}.
+            \item TDS-packaged layout~\cite{ctan:help:tds}; which is only suitable for complex packages~\cite{texlive-packaging}.
+            The structure simply implies a texmf tree~\cite{tds}, which is normally overkill.
+        \end{enumerate}
+%        XDP provides a custom \texttt{texmf.cnf} configuration file supporting \texttt{PKGHOME} directory.
+%        It does not intend to \textit{change} the definition of \texttt{TEXMFHOME},
+%        which works for TDS standard~\cite{tds} directory structures,
+%        but rather extend the \texttt{TEXINPUTS} and \texttt{LUAINPUTS} variables with \texttt{PKGHOME},
+%        which provides a slimmer structure for packages' project directory structure.
+%        This \texttt{TEXMF} configuration brings support for your \TeX distribution to \textit{`large packages'}
+%        as stated by the CTAN Team~\cite{ctan:help:upload},
+%        which is \textit{`improved by a single extra layer of directories'} as seen in figure~\ref{fig:project dir}.
+%        However, for small packages, every file should be placed in a single directory,
+%        which is the preferred choice of both CTAN and \TeXLive,
+%        and by default supported with \TeX distributions thanks to the \texttt{TEXMFDOTDIR} variable.
+%        For large packages that do not work properly with \texttt{PKGHOME} variable,
+%        the TDS-packaged layout should be used instead~\cite{ctan:help:tds}.
+%        XDP packages use the slimmer structure, as they typically ship Lua scripting files.\\
+        Note that cases one and three should already work from \textit{any} directory if the package directory is added to the \texttt{TEXMFAUXTREES} variable.
+        Case two, however, requires an additional configuration in order for it to work, due to its incompatibility with texmf trees (case three).\\
+%        \columnbreak
         \dirtree{%
             .1 \meta{project dir}.
             .2 .github.
@@ -108,34 +150,61 @@
             .2 README.md.
             .2 LICENSE.txt.
         }
-        \captionof{figure}{Project Directory Structure}\label{fig:project dir}
+        \captionof{figure}{Project Directory Structure}\label{fig:project dir}\bigskip
 
+        If you keep all \LaTeX projects in a certain directory, let's say \texttt{\textasciitilde/src/latex/a-package}, it can be easily configured for all packages in that directory like so:
+        \begin{lstlisting}
+    TEXMFDOTDIR = .;~/src/latex//
+        \end{lstlisting}
+        This approach came out as a very generic solution of managing \LaTeX package sources locally and was hinted by Karl Berry while discussing previous approaches with both local development practices and CI/CD practices in mind.
+        It can be configured in your custom \texttt{texmf.cnf} file, generally found under:
+        \begin{lstlisting}
+    /usr/local/texlive/2024/texmf.cnf
+        \end{lstlisting}
+        Or you can find it by consulting:
+        \begin{lstlisting}
+    kpsewhich -a texmf.cnf
+        \end{lstlisting}
+        Note that the second response always happens to be the configuration shipped by the \TeXLive distribution and shouldn't be tempered with.
+
+        If you favor to `whitelist' packages one by one, instead of adding all packages in a certain directory, a single package can be added like so:
+        \begin{lstlisting}
+    tlmgr conf auxtrees add \
+        ~/src/latex/a-package
+        \end{lstlisting}
+        Or use [... \texttt{auxtrees remove} ...] instead, to prevent a package from being found.
 
         \section{Package Bundling}\label{sec:bundling}
 
         Packages must be bundled with either \texttt{zip} or \texttt{tar.gz} extension.
         XDP prefers the \texttt{tar.gz} extension, because \texttt{tar} is by default present on GNU/Linux platforms.
         The archive layout must be one of the layouts described in section~\ref{sec:pds}.
-        An additional \texttt{tds.tar.gz} archive should be included in the toplevel of the package archive, which has a TDS compliant layout.
-        While the extra TDS archive is not a hard requirement according to CTAN, it is however helpful for users that want to manually install the package without the support of the \texttt{tlmgr} program and/or the \texttt{PKGHOME} variable.
+        An additional \texttt{tds.tar.gz} archive should be created, however, not to be included in the toplevel of the package archive as some guidelines may mention.
+        The additional TDS archive is helpful for users that want to manually install the package without the support of the \texttt{tlmgr} program.
+        The TDS archive may be included a GitHub release page (see section~\ref{sec:cicd}).
         All archiving procedures should be available as targets in the projects' Makefile.
         The \texttt{doc} directory typically contains auxiliary files after compilation of the manual.
         These auxiliary files must be excluded in any of the described directory structures in section~\ref{sec:pds}.
-        This can be avoided by either cleaning your output directory with \texttt{latexmk -c \meta{package name}} after the compilation of the manual or by explicitly picking files with the \texttt{tar} command when bundling the package.
+        This can be avoided by either cleaning your output directory with \texttt{latexmk -c \meta{package name}} after the compilation of the manual
+        or by explicitly picking files with the \texttt{tar} command when bundling the package.
 
 
-        \section{Package Versioning}
+        \section{Package Versioning}\label{sec:package-versioning}
 
         Packages must at least have a distinct date and should additionally have a version for every release to come.
         Despite having a second variable; the version, packages must not create multiple releases on one day.
-        Both the main Lua file, likely called \meta{package name}\texttt{.lua}, and all \TeX related files, like \texttt{.cls} or \texttt{.sty} files, should have included an updated version and date in its sources, prior to creating a release (see section~\ref{sec:submission}).
+        Both the main Lua file, likely called \meta{package name}\texttt{.lua}, and all \TeX related files,
+        like \texttt{.cls} or \texttt{.sty} files,
+        should have included an updated version and date in its sources, prior to creating a release
+        (see section~\ref{sec:submission}).
         The version and date must correspond with the administration of the Version Control system (see section~\ref{sec:git}).
 
 
         \section{Package Submission}\label{sec:submission}
 
         Before uploading the package bundle to CTAN, the bundle should be reviewed by a \textit{human} first.
-        For submitting an update to a package, it's best to first browse to the package url on CTAN and secondly hit the upload button.
+        For submitting an update to a package,
+        it's best to first browse to the package url on CTAN and secondly hit the upload button.
         That way, earlier provided information will be automatically filled in, i.e.\ the suggested CTAN directory.
         For more information on uploading packages to CTAN, read the upload addendum of CTAN~\cite{ctan:help:addendum}.
 
@@ -146,15 +215,26 @@
         All package sources should be held publicly on GitHub as a central point of collaboration.
         Every commit should be digitally signed either using GPG, SSH or S/MIME by any contributor.
         Package versions should be managed using Git \textit{signed} tags.
-        The Git tag must point to a revision where hardcoded versions and dates are updated in all applicable sources of the package.
-        Package manuals should address the package versions and dates with \texttt{gitinfo-lua}~\cite{gitinfo-lua}, instead of inserting a hardcoded version and date.
+        The Git tag must point to a revision
+        where hardcoded versions and dates are updated in all applicable sources of the package.
+        Package manuals should address the package versions and dates with \texttt{gitinfo-lua}~\cite{gitinfo-lua},
+        instead of inserting a hardcoded version and date.
 
 
-        \section{Continuous Integration and Delivery}
+        \section{Continuous Integration and Delivery}\label{sec:cicd}
 
         Any GitHub Action should use the Docker image originating from \texttt{xdp-docker}~\cite{xdp-docker}.
+        The Docker image contains most \LaTeX packages and some additional binaries.
+        If the Docker image isn't working for your project, you can either contact Xerdi, or fork the repository, make the necessary changes and host it on:
+        \begin{center}
+            \url{https://hub.docker.com}
+        \end{center}
+
         Any GitHub Action should use the appropriate \texttt{TEXMFHOME} repository.
-        For XDP packages, this typically is \url{https://github.com/Xerdi/texmf-packaging}.
+        For XDP packages, this typically is:
+        \begin{center}
+        \url{https://github.com/Xerdi/texmf-packaging}
+        \end{center}
 
         A project should have a `build' GitHub Action.
         The build action should trigger for the master/main branch and for every opened or synchronized pull-request.
@@ -170,18 +250,21 @@
         The GitHub Release must either be made publicly or deleted by the package maintainer.
 
 
-        \section{Licensing}
+        \section{Licensing}\label{sec:licensing}
 
-        All package sources must be licensed as Free Software.
+        All package sources must be licensed as Free Software,
+        as described in the \TeXLive package contributions~\cite{texlive-packaging}.
         All \LaTeX\ related files within XDP and its derived packages are all to be licensed under the LPPLv1.3c license.
-        Platform-dependent program's sources should instead be licensed under the GPLv2 license or any higher version of the GPL, because the LPPL license is specifically for \LaTeX related sources.
+        Either platform-dependent program's sources and scripts should instead be licensed under the GPLv2 license or any higher version of the GPL,
+        because the LPPL license is specifically for \LaTeX related sources.
 
     \end{multicols}
 
+    \printbibliography
+
     \clearpage
 
-
-    \section{Examples}
+    \section{Examples}\label{sec:examples}
 
     \subsection{Package Manual Example}
 
@@ -201,6 +284,4 @@
 
     \subsection{Publish Action Example}
     \lstinputlisting[style=yaml,frame=single,caption={Example of continuous delivery \texttt{.github/workflows/publish.yaml}}]{examples/publish.yaml}
-
-    \printbibliography
 \end{document}
